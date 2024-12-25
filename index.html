@@ -1,167 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Messages with Fireworks</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-      font-family: sans-serif;
-      position: relative;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Animado</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #ffff;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
 
-    #message {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      z-index: 10;
-    }
+        /* Estilos del sobre */
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #f7b2a4; /* Color claro rojizo */
+            border: 3px solid #b98b7d; /* Color rojo más oscuro para los bordes */
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            overflow: hidden;
+            transform-origin: center;
+            transition: transform 0.5s ease-in-out;
+        }
 
-    .letter {
-      font-size: 3rem;
-      color: white;
-      position: relative;
-      opacity: 0;
-      animation: fade-in 1s forwards ease-out;
-      margin: 0.5rem;
-    }
+        .envelope.closed {
+            background: #f2a8a1; /* Color rojizo claro para el sobre cerrado */
+        }
 
-    .particle {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background-color: white;
-      border-radius: 50%;
-      animation: explode 1.2s ease-out forwards;
-      opacity: 0;
-    }
+        .envelope .seal {
+            position: absolute;
+            top: 83px; /* Centrado superior */
+            left: 50%;
+            transform: translateX(-50%); /* Centrado horizontal */
+            width: 50px;
+            height: 50px;
+            background: #b98b7d; /* Color del sello en tono rojizo */
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            text-transform: uppercase;
+            z-index: 10;
+        }
 
-    @keyframes fade-in {
-      0% {
-        opacity: 0;
-        transform: scale(0.1);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
+        /* Solapas del sobre */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: #e8a69f; /* Color rojizo más suave */
+            border-bottom: 2px solid #b98b7d;
+            transform-origin: top;
+            transition: transform 1s ease-in-out;
+            border-radius: 0 0 15px 15px;
+        }
 
-    @keyframes explode {
-      0% {
-        transform: translate(0, 0);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(var(--x), var(--y));
-        opacity: 0;
-      }
-    }
+        /* Estilos para el popup */
+        .popup {
+            display: none; /* Inicialmente oculto */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 540px;
+            background: white;
+            border: 2px solid #b98b7d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            z-index: 1000;
+            padding: 20px;
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            color: #333;
+            box-sizing: border-box;
+        }
 
-    @keyframes fade-out {
-      0% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-      }
-    }
+        .popup p {
+            line-height: 1.7;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
 
-    @media (max-width: 768px) {
-      .letter {
-        font-size: 2.5rem;
-      }
-    }
+        .popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #b98b7d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
 
-    @media (max-width: 480px) {
-      .letter {
-        font-size: 2rem;
-      }
-    }
-  </style>
+        .popup .close-btn:hover {
+            background: #8f5b4d;
+        }
+
+        /* Estilo de las líneas para simular una hoja de libreta */
+        .popup p::before {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 1px;
+            background: #ccc;
+            margin-bottom: 10px;
+        }
+
+    </style>
 </head>
 <body>
-  <div id="message"></div>
+    <div class="envelope" id="envelope">
+        <div class="flap"></div>
+        <div class="seal">J</div> <!-- Sello centrado -->
+    </div>
 
-  <script>
-    const message = document.getElementById("message");
+    <!-- Popup que muestra la carta -->
+    <div class="popup" id="popup">
+        <button class="close-btn" id="close-btn">Cerrar</button>
+        <p>Estimada <span>Personita</span>,<br><br>
+            Me permito dirigirme a ti con la intención de expresar lo que has inspirado en mí. No puedo evitar dedicarte unas palabras que reflejan mi admiración. Eres la personificación de la singularidad, esa esencia única que te distingue y te hace verdaderamente especial. Por si fuera poco, tus comentarios sobre mí han sido un halago que valoro profundamente, más aún viniendo de alguien como tú.<br><br>
+            Permíteme finalizar deseándote un día maravilloso y una Navidad llena de momentos felices.<br><br>
+            Atentamente,<br>
+            ~Yo
+            
+        </p>
+    </div>
 
-    function createFirework(letterElement) {
-      const particleCount = 20;
-      const explosionCount = 3;
-
-      for (let i = 0; i < explosionCount; i++) {
-        setTimeout(() => {
-          for (let j = 0; j < particleCount; j++) {
-            const particle = document.createElement("div");
-            particle.className = "particle";
-
-            const angle = Math.random() * 2 * Math.PI;
-            const radius = Math.random() * 100 + 50;
-
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-
-            particle.style.setProperty("--x", `${x}px`);
-            particle.style.setProperty("--y", `${y}px`);
-
-            particle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
-            letterElement.appendChild(particle);
-
+    <script>
+        document.getElementById('envelope').addEventListener('click', function () {
+            const flap = document.querySelector('.flap');
+            const popup = document.getElementById('popup');
+            const envelope = document.getElementById('envelope');
+            
+            // Animación de la solapa
+            flap.style.transform = 'rotateX(180deg)';
+            
+            // Mostrar el popup después de un pequeño retraso para completar la animación
             setTimeout(() => {
-              particle.remove();
-            }, 1200);
-          }
-        }, i * 500);
-      }
-    }
-
-    function displayMessage(text, callback) {
-      message.style.display = 'flex';
-      message.innerHTML = ''; // Limpiamos el mensaje anterior
-      const letters = [...text].map((letter, i) => {
-        const span = document.createElement("span");
-        span.className = "letter";
-        span.textContent = letter;
-        span.style.animationDelay = `${i * 0.5}s`;
-
-        setTimeout(() => createFirework(span), i * 300);
-        message.appendChild(span);
-        return span;
-      });
-
-      // Desvanecer las letras después de un tiempo
-      setTimeout(() => {
-        letters.forEach(letter => {
-          letter.style.animation = "fade-out 1s forwards";
+                popup.style.display = 'block'; // Mostrar el popup
+                envelope.classList.add('closed'); // Cambiar el color del sobre y poner el sello
+            }, 500); // Iniciar la animación de la solapa antes de mostrar el popup
         });
-      }, text.length * 500 + 5000);
 
-      // Llamamos al siguiente mensaje después de un retraso
-      setTimeout(callback, text.length * 500 + 6000);
-    }
-
-    // Secuencia de mensajes
-    function showMessages() {
-      displayMessage("Merry Christmas", () => {
-        setTimeout(() => {
-          displayMessage("Love U", showMessages); // Repetir secuencia si es necesario
-        }, 500);
-      });
-    }
-
-    // Inicia los mensajes
-    showMessages();
-  </script>
+        // Funcionalidad para cerrar el popup
+        document.getElementById('close-btn').addEventListener('click', function () {
+            const popup = document.getElementById('popup');
+            const envelope = document.getElementById('envelope');
+            popup.style.display = 'none'; // Ocultar el popup
+            envelope.classList.remove('closed'); // Volver a abrir el sobre (quitar el sello y color)
+        });
+    </script>
 </body>
 </html>
