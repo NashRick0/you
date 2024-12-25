@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YOU</title>
+  <title>Messages with Fireworks</title>
   <style>
     body {
       margin: 0;
@@ -18,7 +18,7 @@
     }
 
     #message {
-      display: none; /* Inicialmente ocultamos el mensaje */
+      display: flex;
       gap: 1rem;
       flex-wrap: wrap;
       justify-content: center;
@@ -46,16 +46,6 @@
       opacity: 0;
     }
 
-    .snowflake {
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      background-color: white;
-      border-radius: 50%;
-      animation: snow 5s linear infinite;
-      opacity: 0.8;
-    }
-
     @keyframes fade-in {
       0% {
         opacity: 0;
@@ -78,17 +68,6 @@
       }
     }
 
-    @keyframes float {
-      0% {
-        transform: translate(-50%, 0);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(-50%, -300px);
-        opacity: 0;
-      }
-    }
-
     @keyframes fade-out {
       0% {
         opacity: 1;
@@ -98,16 +77,6 @@
       }
     }
 
-    @keyframes snow {
-      0% {
-        transform: translateY(-100px); /* Los copos de nieve empiezan fuera de la pantalla */
-      }
-      100% {
-        transform: translateY(100vh); /* Los copos caen hasta la parte inferior */
-      }
-    }
-
-    /* Responsive Styles */
     @media (max-width: 768px) {
       .letter {
         font-size: 2.5rem;
@@ -119,12 +88,6 @@
         font-size: 2rem;
       }
     }
-
-    @media (max-width: 320px) {
-      .letter {
-        font-size: 1.5rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -132,28 +95,10 @@
 
   <script>
     const message = document.getElementById("message");
-    
-
-    // Efecto de nieve
-    function createSnowflake() {
-      const snowflake = document.createElement('div');
-      snowflake.className = 'snowflake';
-      snowflake.style.left = `${Math.random() * 100}vw`; // Los copos se distribuyen por todo el ancho de la pantalla
-      snowflake.style.animationDuration = `${Math.random() * 5 + 3}s`; // Duración aleatoria de la caída de los copos
-      snowflake.style.animationDelay = `${Math.random() * 5}s`; // Retardo aleatorio para la caída
-      document.body.appendChild(snowflake);
-
-      setTimeout(() => {
-        snowflake.remove(); // Eliminar copos después de un tiempo
-      }, 1000); // Elimina el copo de nieve después de 10 segundos
-    }
-
-    // Crea nieve constantemente
-    setInterval(createSnowflake, 200); // Cada 50ms generamos un nuevo copo de nieve
 
     function createFirework(letterElement) {
-      const particleCount = 20; // Número de partículas por letra
-      const explosionCount = 3; // Número de explosiones por letra
+      const particleCount = 20;
+      const explosionCount = 3;
 
       for (let i = 0; i < explosionCount; i++) {
         setTimeout(() => {
@@ -177,65 +122,46 @@
               particle.remove();
             }, 1200);
           }
-        }, i * 500);  // Espaciamos las explosiones para mayor efecto visual
+        }, i * 500);
       }
     }
 
-    function floatLetter(letterElement) {
-      letterElement.style.animation = "float 2s ease-in forwards"; // Animación de flotado
-      letterElement.style.opacity = "0";
-
-      setTimeout(() => {
-        letterElement.remove();
-      }, 2000);
-    }
-
     function displayMessage(text, callback) {
-      message.style.display = 'flex'; // Mostrar el mensaje cuando la cuenta regresiva termine
-      message.innerHTML = '';  // Limpiamos el mensaje anterior
+      message.style.display = 'flex';
+      message.innerHTML = ''; // Limpiamos el mensaje anterior
       const letters = [...text].map((letter, i) => {
         const span = document.createElement("span");
         span.className = "letter";
         span.textContent = letter;
         span.style.animationDelay = `${i * 0.5}s`;
 
-        setTimeout(() => createFirework(span), i * 300);  // Efecto de fuegos artificiales para cada letra
+        setTimeout(() => createFirework(span), i * 300);
         message.appendChild(span);
         return span;
       });
 
-      // Después de que todas las letras se han mostrado, se quedarán estáticas
+      // Desvanecer las letras después de un tiempo
       setTimeout(() => {
         letters.forEach(letter => {
-          letter.style.animation = "none";  // Desactivamos la animación de flotado
-          letter.style.opacity = "1";  // Aseguramos que las letras queden visibles
+          letter.style.animation = "fade-out 1s forwards";
         });
+      }, text.length * 500 + 5000);
 
-        // Esperamos 5 segundos y luego desvanecemos las letras
-        setTimeout(() => {
-          letters.forEach(letter => {
-            letter.style.animation = "fade-out 1s forwards";  // Animación de desaparición
-          });
-        }, 5000);  // 5 segundos estáticos
-      }, text.length * 500);  // Esperamos a que termine la animación de la última letra
-
-      // Después de que el mensaje se ha mostrado, llamamos al callback
-      setTimeout(callback, text.length * 500 + 7000);  // Llamamos al siguiente mensaje después de la desaparición
+      // Llamamos al siguiente mensaje después de un retraso
+      setTimeout(callback, text.length * 500 + 6000);
     }
 
     // Secuencia de mensajes
     function showMessages() {
       displayMessage("Merry Christmas", () => {
         setTimeout(() => {
-          displayMessage("Love U", showMessages);  // Después de "Merry Christmas", muestra "Love U!"
+          displayMessage("Love U", showMessages); // Repetir secuencia si es necesario
         }, 500);
       });
     }
 
-    // Cuando la cuenta regresiva llegue a 00:00, inicia la animación
-    function startMessages() {
-      showMessages();  // Inicia la secuencia de mensajes
-    }
+    // Inicia los mensajes
+    showMessages();
   </script>
 </body>
 </html>
